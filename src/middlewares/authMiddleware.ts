@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
-import { UnauthenticatedError } from '../errors/customError.js'
+import { UnauthenticatedError } from '../errors/customErrors.js'
 import { verifyJWT } from '../utils/jwt.js'
 
 const authMiddleware = async (

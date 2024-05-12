@@ -1,11 +1,7 @@
 import { StatusCodes } from 'http-status-codes'
 import prisma from '../../prisma/client.js'
 import { Request, Response } from 'express'
-interface RequestWithUserInfo extends Request {
-  user: {
-    id: string
-  }
-}
+import { RequestWithUserInfo } from '../types.js'
 
 export const getCurrentUser = async (
   req: RequestWithUserInfo,
@@ -22,15 +18,17 @@ export const updateCurrentUser = async (
   res: Response
 ) => {
   let newUser = req.body
-  delete newUser.id
-  delete newUser.password
+  if ('id' in req.body) {
+    delete newUser['id']
+    delete newUser['password']
+  }
   // check if there is a user use the email
   const currentUser = await prisma.user.findUnique({
     where: { id: req.user.id },
   })
   const user = await prisma.user.findUnique({
     where: {
-      email: newUser.email,
+      email: newUser['email'],
       NOT: {
         email: currentUser.email,
       },

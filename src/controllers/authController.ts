@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes'
 import { comparePasswords, hashPassword } from '../utils/password.js'
 import prisma from '../../prisma/client.js'
 import { Request, Response } from 'express'
-import { UnauthenticatedError } from '../errors/customError.js'
+import { UnauthenticatedError } from '../errors/customErrors.js'
 import { createJWT } from '../utils/jwt.js'
 
 export const register = async (req: Request, res: Response) => {

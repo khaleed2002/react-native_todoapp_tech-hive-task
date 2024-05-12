@@ -4,7 +4,7 @@ import {
   NotFoundError,
   UnauthenticatedError,
   UnauthorizedError,
-} from '../errors/customError.js'
+} from '../errors/customErrors.js'
 import prisma from '../../prisma/client.js'
 import { NextFunction, Request, Response } from 'express'
 
@@ -15,7 +15,7 @@ const withValidationErrors = (validateValues) => {
       const errors = validationResult(req)
       if (!errors.isEmpty()) {
         const errorMessages = errors.array().map((err) => err.msg)
-        if (errorMessages[0].startsWith('no job')) {
+        if (errorMessages[0].startsWith('no task')) {
           throw new NotFoundError(errorMessages.join())
         } else if (errorMessages[0].startsWith('not authorized')) {
           throw new UnauthorizedError(errorMessages.join())
@@ -26,7 +26,13 @@ const withValidationErrors = (validateValues) => {
     },
   ]
 }
+function isValidMongoId(id: string): boolean {
+  // Regular expression for MongoDB ObjectId validation
+  const objectIdRegex = /^[a-f\d]{24}$/i;
 
+  // Test if the provided string matches the regular expression
+  return objectIdRegex.test(id);
+}
 export const validateUser = withValidationErrors([
   body('name').trim().notEmpty().withMessage('name is required'),
   body('email')
@@ -67,3 +73,29 @@ export const validateUpdateUser = withValidationErrors([
     .withMessage('invalid email format'),
   body('name').trim().notEmpty().withMessage('name is required'),
 ])
+
+
+
+export const validateTaskInput = withValidationErrors([
+  body('description').notEmpty().withMessage('description is required'),
+  body('completed').notEmpty().withMessage('completed is required').isBoolean().withMessage('completed field should be Boolean')
+])
+
+export const validateTaskIdAndOwnership = withValidationErrors([
+  param('id')
+    .custom(async (id, { req }) => {
+
+      const isValidMongoDBID = isValidMongoId(id)
+      if (!isValidMongoDBID)
+        throw new BadRequestError('invalid MongoDB id')
+
+      const task = await prisma.task.findUnique({ where: { id } })
+      if (!task)
+        throw new NotFoundError(`no task with id ${id}`)
+
+      const isOwner = req.user.id === task.userId.toString()
+      if (!isOwner) {
+        throw new UnauthorizedError('not authorized to access this route')
+      }
+    })]
+)

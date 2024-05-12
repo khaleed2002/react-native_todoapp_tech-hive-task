@@ -25,6 +25,7 @@ app.use(cookieParser())
 // routes
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/users', authMiddleware, userRouter)
+app.use('/api/v1/tasks', authMiddleware, taskRouter)
 
 app.get('/', (_req, res) => {
   res.send('basic server...')
