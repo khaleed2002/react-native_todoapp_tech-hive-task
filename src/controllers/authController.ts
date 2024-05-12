@@ -33,7 +33,7 @@ export const login = async (req: Request, res: Response) => {
   if (!isCorrectPassword) {
     throw new UnauthenticatedError('invalid email or password')
   }
-  const token = createJWT({ _id: user.id })
+  const token = createJWT({ id: user.id })
   const oneWeek = 1000 * 60 * 60 * 24 * 7
   res.cookie('token', token, {
     httpOnly: true,

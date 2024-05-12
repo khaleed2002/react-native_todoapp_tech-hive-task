@@ -10,6 +10,7 @@ import userRouter from './routes/userRouter.js'
 import authRouter from './routes/authRouter.js'
 import taskRouter from './routes/taskRouter.js'
 import errorHandlerMiddleware from './middlewares/errorHandlerMiddleware.js'
+import authMiddleware from './middlewares/authMiddleware.js'
 dotenv.config()
 
 const app = express()
@@ -19,9 +20,11 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'))
 }
 app.use(express.json())
+app.use(cookieParser())
 
 // routes
 app.use('/api/v1/auth', authRouter)
+app.use('/api/v1/users', authMiddleware, userRouter)
 
 app.get('/', (_req, res) => {
   res.send('basic server...')

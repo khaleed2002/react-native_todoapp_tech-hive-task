@@ -57,3 +57,13 @@ export const validateLogin = withValidationErrors([
     .withMessage('invalid email format'),
   body('password').notEmpty().withMessage('password is required'),
 ])
+
+export const validateUpdateUser = withValidationErrors([
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage('email is required')
+    .isEmail()
+    .withMessage('invalid email format'),
+  body('name').trim().notEmpty().withMessage('name is required'),
+])

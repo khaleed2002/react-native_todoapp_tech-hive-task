@@ -1,8 +1,13 @@
 import { Router } from 'express'
+import {
+  getCurrentUser,
+  updateCurrentUser,
+} from '../controllers/userController.js'
+import { validateUpdateUser } from '../middlewares/validationMiddlewares.js'
 
-const router = Router()
+const route = Router()
 
-router.get('/me', () => {})
-router.patch('/me', () => {})
+route.get('/me', getCurrentUser)
+route.patch('/me', validateUpdateUser, updateCurrentUser)
 
-export default router
+export default route

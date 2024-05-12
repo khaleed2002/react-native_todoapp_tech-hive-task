@@ -4,10 +4,10 @@ import {
   validateLogin,
   validateUser,
 } from '../middlewares/validationMiddlewares.js'
-const router = Router()
+const route = Router()
 
-router.post('/login', validateLogin, login)
-router.get('/logout', logout)
-router.post('/register', validateUser, register)
+route.post('/login', validateLogin, login)
+route.get('/logout', logout)
+route.post('/register', validateUser, register)
 
-export default router
+export default route
