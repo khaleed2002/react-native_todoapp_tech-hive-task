@@ -1,26 +1,47 @@
+import 'express-async-errors'
 import express from 'express'
 import * as dotenv from 'dotenv'
 import morgan from 'morgan'
+import cookieParser from 'cookie-parser'
+import prisma from '../prisma/client.js'
 import { StatusCodes } from 'http-status-codes'
-import '../prisma/client.js'
+// routes
+import userRouter from './routes/userRouter.js'
+import authRouter from './routes/authRouter.js'
+import taskRouter from './routes/taskRouter.js'
+import errorHandlerMiddleware from './middlewares/errorHandlerMiddleware.js'
 dotenv.config()
 
 const app = express()
+
 //middlewares
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'))
 }
 app.use(express.json())
 
+// routes
+app.use('/api/v1/auth', authRouter)
+
 app.get('/', (_req, res) => {
   res.send('basic server...')
 })
 
+// Not Found Middleware
 app.use('*', (_req, res) => {
-  res.status(StatusCodes.NOT_FOUND).send({ error: 'Error 404, Not Found' })
+  res.status(404).json({ message: 'Not Found' })
 })
 
+app.use(errorHandlerMiddleware)
+
+// server listening
 const port = parseInt(process.env.PORT as string) || 3001
-app.listen(port, () => {
-  console.log(`Server is listening on port ${port}`)
-})
+
+try {
+  app.listen(port, () => {
+    console.log(`Server is listening on port ${port}`)
+  })
+} catch (error) {
+  console.log(error)
+  process.exit(1)
+}

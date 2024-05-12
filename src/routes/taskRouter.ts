@@ -9,3 +9,5 @@ route.post('/', () => {})
 route.patch('/:id', () => {})
 // delete a task
 route.delete('/:id', () => {})
+
+export default route
