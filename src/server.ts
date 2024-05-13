@@ -5,6 +5,7 @@ import morgan from 'morgan'
 import cookieParser from 'cookie-parser'
 import prisma from '../prisma/client.js'
 import { StatusCodes } from 'http-status-codes'
+import cors from 'cors'
 // routes
 import userRouter from './routes/userRouter.js'
 import authRouter from './routes/authRouter.js'
@@ -21,6 +22,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 app.use(express.json())
 app.use(cookieParser())
+app.use(cors());
 
 // routes
 app.use('/api/v1/auth', authRouter)
