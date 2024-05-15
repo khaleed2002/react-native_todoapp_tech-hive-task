@@ -9,26 +9,12 @@ interface IAuthenticatedUser {
     name: string
 }
 
-export interface IColor {
-    name: string
-    id: string
-    code: string
-}
-
 export interface IIcon {
     name: string
     id: string
     symbol: string
 }
 
-interface ICategory {
-    _id: string
-    name: string
-    user: IUser | string
-    isEditable: boolean
-    color: IColor
-    icon: IIcon
-}
 
 interface ICategoryRequest {
     name: string
@@ -37,17 +23,15 @@ interface ICategoryRequest {
 }
 
 interface ITask {
-    _id: string
-    name: string
-    isCompleted: boolean
-    categoryId: string
+    id: string
+    description
+    completed: boolean
+    userId: string
     createdAt: string
-    date: string
+    updatedAt: string
 }
 
 interface ITaskRequest {
-    name: string
-    isCompleted: boolean
-    categoryId: string
-    date: string
+    description: string
+    completed: boolean
 }

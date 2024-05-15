@@ -1,4 +1,4 @@
-import { ICategory, ITask } from "@/types"
+import { ITask } from "@/types"
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs"
 import {
     CompositeNavigationProp,
@@ -20,23 +20,12 @@ export type RootBottomTabParamList = {
     HomeStack: NavigatorScreenParams<HomeStackParamList>
     Today: undefined
     Completed: undefined
-    CategoriesStack: NavigatorScreenParams<CategoriesStackParamList>
 }
 
 export type HomeStackParamList = {
     Home: undefined
     EditTask: {
         task: ITask
-    }
-}
-
-export type CategoriesStackParamList = {
-    Categories: undefined
-    Category: {
-        id: string
-    }
-    CreateCategory: {
-        category?: ICategory
     }
 }
 
@@ -68,9 +57,6 @@ export type RootTabScreenProps<Screen extends keyof RootBottomTabParamList> =
         BottomTabScreenProps<RootBottomTabParamList, Screen>,
         NativeStackScreenProps<RootBottomTabParamList>
     >
-
-export type CategoriesNavigationType =
-    NativeStackNavigationProp<CategoriesStackParamList>
 
 export type HomeScreenNavigationType =
     NativeStackNavigationProp<HomeStackParamList>

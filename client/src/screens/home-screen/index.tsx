@@ -1,64 +1,92 @@
-import Loader from "@/components/shared/loader"
-import SafeAreaWrapper from "@/components/shared/safe-area-wrapper"
-import Task from "@/components/tasks/task"
-import TaskActions from "@/components/tasks/task-actions"
-import { fetcher } from "@/services/config"
-import useUserGlobalStore from "@/store/useUserGlobalStore"
-import { ICategory, ITask } from "@/types"
-import { getGreeting } from "@/utils/helpers"
-import { AnimatedText, Box, Text } from "@/utils/theme"
-import { format } from "date-fns"
-import React from "react"
-import { FlatList } from "react-native"
-import { ZoomInEasyDown } from "react-native-reanimated"
-
-import useSWR from "swr"
-
-const today = new Date()
-
-const greeting = getGreeting({ hour: new Date().getHours() })
+import { useEffect, useState } from 'react';
+import SafeAreaWrapper from '@/components/shared/safe-area-wrapper';
+import { Box } from '@/utils/theme';
+import { getAllTasks, editSingleTask, deleteSingleTask, createTask } from '@/services/api'; // Import API service functions for tasks
+import { ITask } from '@/types';
+import TaskItem from '@/components/tasks/task';
+import Input from '@/components/shared/input';
+import Button from '@/components/shared/Button';
+import { Controller, useForm } from 'react-hook-form';
 
 const HomeScreen = () => {
-    const { user } = useUserGlobalStore()
+    const [tasks, setTasks]: [ITask[], React.Dispatch<React.SetStateAction<ITask[]>>] = useState<ITask[]>([]);
 
-    const {
-        data: tasks,
-        isLoading,
-        mutate: mutateTasks,
-    } = useSWR<ITask[]>("tasks/", fetcher)
+    useEffect(() => {
+        const fetchTasks = async () => {
+            try {
+                const tasks = await getAllTasks();
+                setTasks(tasks)
+                return tasks
+            } catch (error) {
+            }
+        }
+        fetchTasks()
+    }, [])
 
-    if (isLoading || !tasks) {
-        return <Loader />
+    const handleDeleteTask = async (id: string) => {
+        try {
+            setTasks(tasks => tasks.filter(task => task.id !== id))
+            await deleteSingleTask({ id })
+        } catch (error) {
+        }
     }
+    const handleToggleComplete = async ({ id, description, completed }: ITask) => {
+        try {
+            setTasks((tasks) => {
+                return tasks.map((task) => {
+                    if (task.id === id) {
+                        task.completed = !task.completed
+                    }
+                    return task
+                })
+            })
+            await editSingleTask({ id, description, completed: !completed } as ITask)
+        } catch (error) {
 
+        }
+    }
+    const {
+        control,
+        handleSubmit,
+    } = useForm<Omit<ITask, "name">>({
+        defaultValues: {
+            description: "",
+            completed: false,
+        },
+    })
+    const onSubmit = async (data: Omit<ITask, "name">) => {
+        try {
+            const { description, completed } = data
+            const newTask = await createTask({ description, completed } as ITask)
+            setTasks((tasks) => [...tasks, newTask])
+        } catch (error) { }
+    }
     return (
         <SafeAreaWrapper>
-            <Box flex={1} mx="4">
-                <AnimatedText
-                    variant="textXl"
-                    fontWeight="500"
-                    entering={ZoomInEasyDown.delay(500).duration(700)}
-                >
-                    Good {greeting} {user?.name}
-                </AnimatedText>
-                <Text variant="textXl" fontWeight="500">
-                    It’s {format(today, "eeee, LLL dd")} - {tasks.length} tasks
-                </Text>
-                <Box height={26} />
-                <TaskActions categoryId="" />
-                <Box height={26} />
-                <FlatList
-                    data={tasks}
-                    renderItem={({ item }) => (
-                        <Task task={item} mutateTasks={mutateTasks} />
+            <Box>
+                <Controller
+                    control={control}
+                    rules={{
+                        required: true,
+                    }}
+                    render={({ field: { onChange, onBlur, value } }) => (
+                        <Input
+                            label="description"
+                            onBlur={onBlur}
+                            onChangeText={onChange}
+                            value={value}
+                            placeholder="Enter task description"
+                        />
                     )}
-                    ItemSeparatorComponent={() => <Box height={14} />}
-                    showsVerticalScrollIndicator={false}
-                    keyExtractor={(item) => item._id}
+                    name="description"
                 />
+                <Button label='Add Task' onPress={handleSubmit(onSubmit)}></Button>
             </Box>
+            {(tasks as ITask[]).map((task) => {
+                return <TaskItem task={task} key={task.id} onDelete={() => handleDeleteTask(task.id)} onToggleComplete={() => handleToggleComplete({ ...task })} />
+            })}
         </SafeAreaWrapper>
     )
-}
+};
 
-export default HomeScreen
+export default HomeScreen;
