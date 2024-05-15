@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import SafeAreaWrapper from '@/components/shared/safe-area-wrapper';
 import { Box } from '@/utils/theme';
 import { getAllTasks, editSingleTask, deleteSingleTask, createTask } from '@/services/api'; // Import API service functions for tasks
@@ -74,7 +74,7 @@ const HomeScreen = () => {
     }
     return (
         <SafeAreaWrapper>
-            <Box marginTop='10'>
+            <Box margin='10' justifyContent="center">
                 <Controller
                     control={control}
                     rules={{

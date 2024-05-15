@@ -1,7 +1,7 @@
 import Navigation from '@/navigation';
 import theme from '@/utils/theme';
 import { ThemeProvider } from '@shopify/restyle';
-import { AppState, StatusBar, StyleSheet } from 'react-native';
+import { AppState, StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { SWRConfig } from 'swr'
 export default function App() {
@@ -18,7 +18,6 @@ export default function App() {
               let appState = AppState.currentState
 
               const onAppStateChange = (nextAppState: any) => {
-                /* If it's resuming from background or inactive mode to active one */
                 if (
                   appState.match(/inactive|background/) &&
                   nextAppState === "active"
