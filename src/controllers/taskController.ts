@@ -5,9 +5,12 @@ import { StatusCodes } from 'http-status-codes'
 import { RequestWithUserInfo } from '../types.js'
 
 export const getAllTasks = async (req: RequestWithUserInfo, res: Response) => {
+    const { completed } = req.query;
+
     const tasks = await prisma.task.findMany({
         where: {
             userId: req.user.id,
+            ...(completed && { completed: Boolean(completed) })
         },
     })
     if (!tasks) {
