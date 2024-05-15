@@ -7,6 +7,7 @@ import TaskItem from '@/components/tasks/task';
 import Input from '@/components/shared/input';
 import Button from '@/components/shared/Button';
 import { Controller, useForm } from 'react-hook-form';
+import uuid from 'react-native-uuid'
 
 const HomeScreen = () => {
     const [tasks, setTasks]: [ITask[], React.Dispatch<React.SetStateAction<ITask[]>>] = useState<ITask[]>([]);
@@ -48,6 +49,7 @@ const HomeScreen = () => {
     const {
         control,
         handleSubmit,
+        reset,
     } = useForm<Omit<ITask, "name">>({
         defaultValues: {
             description: "",
@@ -55,11 +57,17 @@ const HomeScreen = () => {
         },
     })
     const onSubmit = async (data: Omit<ITask, "name">) => {
+
         try {
             const { description, completed } = data
+            const tempTask = { description, completed, id: uuid.v4() }
+            setTasks((tasks) => [...tasks, tempTask as ITask])
+            reset();
             const newTask = await createTask({ description, completed } as ITask)
-            setTasks((tasks) => [...tasks, newTask])
-        } catch (error) { }
+            setTasks((tasks) => [...tasks.slice(0, tasks.length - 1), newTask])
+        } catch (error) {
+            console.log(error);
+        }
     }
     return (
         <SafeAreaWrapper>

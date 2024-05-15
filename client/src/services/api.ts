@@ -64,9 +64,9 @@ export const editSingleTask = async ({ id, description, completed }: ITask) => {
         throw error
     }
 }
-export const createTask = async ({ description, completed }: ITask) => {
+export const createTask = async ({ id, description, completed }: ITask) => {
     try {
-        const response = await customRequest.post(`/tasks`, { description, completed })
+        const response = await customRequest.post(`/tasks`, { id, description, completed })
         return response.data
     } catch (error) {
         console.log("error in createTask", error)
