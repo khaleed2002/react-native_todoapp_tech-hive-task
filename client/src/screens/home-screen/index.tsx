@@ -8,10 +8,11 @@ import Input from '@/components/shared/input';
 import Button from '@/components/shared/Button';
 import { Controller, useForm } from 'react-hook-form';
 import uuid from 'react-native-uuid'
+import useUserGlobalStore from '@/store/useUserGlobalStore';
 
 const HomeScreen = () => {
-    const [tasks, setTasks]: [ITask[], React.Dispatch<React.SetStateAction<ITask[]>>] = useState<ITask[]>([]);
-
+    // const [tasks, setTasks]: [ITask[], React.Dispatch<React.SetStateAction<ITask[]>>] = useState<ITask[]>([]);
+    const { tasks, setTasks } = useUserGlobalStore()
     useEffect(() => {
         const fetchTasks = async () => {
             try {
@@ -26,21 +27,21 @@ const HomeScreen = () => {
 
     const handleDeleteTask = async (id: string) => {
         try {
-            setTasks(tasks => tasks.filter(task => task.id !== id))
+            const newTasks = tasks.filter(task => task.id !== id)
+            setTasks(newTasks)
             await deleteSingleTask({ id })
         } catch (error) {
         }
     }
     const handleToggleComplete = async ({ id, description, completed }: ITask) => {
         try {
-            setTasks((tasks) => {
-                return tasks.map((task) => {
-                    if (task.id === id) {
-                        task.completed = !task.completed
-                    }
-                    return task
-                })
+            const newTasks = tasks.map((task) => {
+                if (task.id === id) {
+                    task.completed = !task.completed
+                }
+                return task
             })
+            setTasks(newTasks)
             await editSingleTask({ id, description, completed: !completed } as ITask)
         } catch (error) {
 
@@ -61,10 +62,12 @@ const HomeScreen = () => {
         try {
             const { description, completed } = data
             const tempTask = { description, completed, id: uuid.v4() }
-            setTasks((tasks) => [...tasks, tempTask as ITask])
+            let newTasks = [...tasks, tempTask as ITask]
+            setTasks(newTasks)
             reset();
             const newTask = await createTask({ description, completed } as ITask)
-            setTasks((tasks) => [...tasks.slice(0, tasks.length - 1), newTask])
+            newTasks = [...tasks.slice(0, tasks.length), newTask]
+            setTasks(newTasks)
         } catch (error) {
             console.log(error);
         }
@@ -90,7 +93,7 @@ const HomeScreen = () => {
                 />
                 <Button label='Add Task' onPress={handleSubmit(onSubmit)}></Button>
             </Box>
-            {(tasks as ITask[]).map((task) => {
+            {(tasks as ITask[])?.map((task) => {
                 return <TaskItem task={task} key={task.id} onDelete={() => handleDeleteTask(task.id)} onToggleComplete={() => handleToggleComplete({ ...task })} />
             })}
         </SafeAreaWrapper>

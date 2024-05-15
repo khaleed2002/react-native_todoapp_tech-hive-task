@@ -28,7 +28,6 @@ const BottomTabNavigator = () => {
                     title: "Completed",
                     tabBarIcon: ({ color }) => <Icons name="completed" color={color} />,
                     headerShown: false,
-
                 })}
             />
         </Tab.Navigator>

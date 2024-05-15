@@ -35,12 +35,21 @@ export const getCurrentUser = async () => {
     }
 }
 
-export const getAllTasks = async () => {
+export let getAllTasks = async () => {
     try {
         const response = await customRequest.get('/tasks')
         return response.data
     } catch (error) {
         console.log("error in getAllTasks", error)
+        throw error
+    }
+}
+export let getAllCompletedTasks = async (completed: boolean) => {
+    try {
+        const response = await customRequest.get(`/tasks?completed=${completed}`)
+        return response.data
+    } catch (error) {
+        console.log("error in getAllCompletedTasks", error)
         throw error
     }
 }
