@@ -71,7 +71,7 @@ const HomeScreen = () => {
     }
     return (
         <SafeAreaWrapper>
-            <Box>
+            <Box marginTop='10'>
                 <Controller
                     control={control}
                     rules={{
