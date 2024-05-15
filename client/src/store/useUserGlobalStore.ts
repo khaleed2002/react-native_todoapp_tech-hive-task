@@ -1,4 +1,4 @@
-import { IAuthenticatedUser } from "@/types"
+import { IAuthenticatedUser, ITask } from "@/types"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
@@ -6,6 +6,8 @@ import { createJSONStorage, persist } from "zustand/middleware"
 interface IUserGlobalStore {
     user: IAuthenticatedUser | null
     updateUser: (user: IAuthenticatedUser | null) => void
+    tasks: ITask[]
+    setTasks: (tasks: ITask[]) => void
 }
 
 const useUserGlobalStore = create<IUserGlobalStore>()(
@@ -17,6 +19,12 @@ const useUserGlobalStore = create<IUserGlobalStore>()(
                     user,
                 })
             },
+            tasks: [],
+            setTasks: (tasks) => {
+                set({
+                    tasks,
+                })
+            }
         }),
         {
             name: "todoapp-user-store",
